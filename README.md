@@ -1,2 +1,2 @@
 # Server
-Nestnet WebSite Server
+서버 배포용
