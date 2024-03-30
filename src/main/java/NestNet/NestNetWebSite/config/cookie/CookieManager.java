@@ -35,9 +35,9 @@ public class CookieManager {
                 .path("/")
 //                .domain("nnet.cbnu.ac.kr ")
                 .maxAge(expTime)
-                .httpOnly(false)
+                .httpOnly(true)
                 .secure(false)
-                .sameSite("None")
+//                .sameSite("None")
                 .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
