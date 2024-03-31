@@ -131,19 +131,19 @@ public class TokenProvider implements InitializingBean {
             return accessToken;
 
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            log.info("TokenProvider.class / validateAccessToken : 잘못된 JWT 서명");
+            log.debug("TokenProvider.class / validateAccessToken : 잘못된 JWT 서명");
 
             return null;
 
         } catch (ExpiredJwtException e) {
-            log.info("TokenProvider.class / validateAccessToken : 만료된 JWT access 토큰");
+            log.debug("TokenProvider.class / validateAccessToken : 만료된 JWT access 토큰");
 
             String refreshToken = getRefreshToken(request);
 
             //리프레쉬 토큰이 유효하면 DB 기존 값 지우고 엑세스 토큰 재발급
             if(refreshToken != null && validateRefreshToken(refreshToken)){
 
-                log.info("TokenProvider.class / validateAccessToken : JWT access 토큰 재발급");
+                log.debug("TokenProvider.class / validateAccessToken : JWT access 토큰 재발급");
 
                 String newAccessToken = createNewAccessToken(refreshToken, response);
 
@@ -198,7 +198,7 @@ public class TokenProvider implements InitializingBean {
         }
 
         if(refreshToken == null){
-            log.info("TokenProvider.class / getRefreshToken : 쿠키에 refresh-token이 없음");
+            log.debug("TokenProvider.class / getRefreshToken : 쿠키에 refresh-token이 없음");
         }
 
         return refreshToken;
@@ -211,13 +211,13 @@ public class TokenProvider implements InitializingBean {
 
         //쿠키에서 받은 리프레시 토큰이 없음
         if(requestRefreshToken == null){
-            log.info("TokenProvider.class / validateRefreshToken : refresh 토큰 없음");
+            log.debug("TokenProvider.class / validateRefreshToken : refresh 토큰 없음");
             return false;
         }
 
         // 레디스에 리프레시 토큰이 있으면
         if(redisUtil.hasKey(requestRefreshToken) && redisUtil.getData(requestRefreshToken).equals("refresh-token")){
-            log.info("TokenProvider.class / validateRefreshToken : refresh 토큰이 유효함");
+            log.debug("TokenProvider.class / validateRefreshToken : refresh 토큰이 유효함");
             return true;
         }
 

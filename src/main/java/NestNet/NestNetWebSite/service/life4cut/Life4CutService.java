@@ -83,7 +83,7 @@ public class Life4CutService {
 
         Path saveFilePath = Paths.get(filePathBuilder.toString());
 
-        log.info("인생네컷 저장 경로 : " + filePathBuilder.toString());
+        log.debug("인생네컷 저장 경로 : " + filePathBuilder.toString());
 
         try {
             file.transferTo(saveFilePath);
