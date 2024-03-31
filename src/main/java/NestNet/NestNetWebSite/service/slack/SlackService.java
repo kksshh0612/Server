@@ -28,16 +28,10 @@ public class SlackService {
     // error : 즉시 전송
     public void sendSlackErrorLog(CustomException e, HttpServletRequest request) {
         try {
-//            slackClient.send(slackWebHookUrl, payload(p -> p
-//                    .text("\uD83D\uDEA8" +
-//                            " 서버에 에러가 감지되었습니다. 즉시 확인이 필요합니다. " +
-//                            "\uD83D\uDEA8")
-//                    .attachments(
-//                            List.of(generateSlackErrorAttachment(e, request))
-//                    )
-//            ));
             slackClient.send(slackWebHookUrl, payload(p -> p
-                    .text(" 서버에 에러가 감지되었습니다. 즉시 확인이 필요합니다. ")
+                    .text("\uD83D\uDEA8" +
+                            " 서버에 에러가 감지되었습니다. 즉시 확인이 필요합니다. " +
+                            "\uD83D\uDEA8")
                     .attachments(
                             List.of(generateSlackErrorAttachment(e, request))
                     )
