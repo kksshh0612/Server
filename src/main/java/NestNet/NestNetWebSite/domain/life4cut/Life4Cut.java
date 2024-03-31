@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
@@ -38,10 +40,7 @@ public class Life4Cut {
      */
     public void createFileName(MultipartFile file){
 
-        StringBuilder nameBuilder = new StringBuilder()
-                .append(UUID.randomUUID()).append("_").append(file.getOriginalFilename());
-
-        this.saveFileName = nameBuilder.toString();
+        this.saveFileName = UUID.randomUUID().toString();
     }
 
     /*

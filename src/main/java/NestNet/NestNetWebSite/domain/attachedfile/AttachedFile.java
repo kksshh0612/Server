@@ -55,11 +55,8 @@ public class AttachedFile {
 
         String fileName = Normalizer.normalize(file.getOriginalFilename(), Normalizer.Form.NFC);    //Mac, Window 한글 처리 다른 이슈 처리
 
-        StringBuilder fileNameBuilder = new StringBuilder();
-        fileNameBuilder.append(UUID.randomUUID().toString()).append("_").append(fileName);
-
         this.originalFileName = fileName;
-        this.saveFileName = fileNameBuilder.toString();
+        this.saveFileName = UUID.randomUUID().toString();
     }
 
     /*
