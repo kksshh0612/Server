@@ -88,7 +88,6 @@ public class SecurityConfig {
                 .requestMatchers("/attendance/statistics")
                 .requestMatchers("/life4cut")
                 .requestMatchers("/post/recent-posts")
-                .requestMatchers("/executive-info/prev", "/executive-info/current")
                 .requestMatchers("/file/**")
                 .requestMatchers("/forbidden", "/unauthorized")
                 .requestMatchers("/image/**");
@@ -125,7 +124,7 @@ public class SecurityConfig {
                         // 댓글 관련은 모든 권한 접근 가능 (승인대기, 탈퇴 제외)
                         .requestMatchers("/comment/**").hasAnyAuthority("ADMIN", "PRESIDENT", "VICE_PRESIDENT", "MANAGER", "GENERAL_MEMBER", "ON_LEAVE_MEMBER", "GRADUATED_MEMBER")
                         // 임원 정보 저장/수정/삭제는 회장, 부회장, 관리자만 접근 가능
-                        .requestMatchers("/executive-info/**").hasAnyAuthority("ADMIN", "PRESIDENT", "VICE_PRESIDENT", "MANAGER")
+                        .requestMatchers("/executive-info/**").hasAnyAuthority("ADMIN", "MANAGER")
                         // 파일 저장은 모든 권한 접근 가능 (승인대기, 탈퇴 제외)
                         .requestMatchers("/file").hasAnyAuthority("ADMIN", "PRESIDENT", "VICE_PRESIDENT", "MANAGER", "GENERAL_MEMBER", "ON_LEAVE_MEMBER", "GRADUATED_MEMBER")
                         // 인생네컷 저장은 회장, 부회장, 관리자만 접근 가능
