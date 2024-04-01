@@ -85,6 +85,7 @@ public class SecurityConfig {
                 .requestMatchers("/swagger-ui/index.html", "/swagger-ui/**", "/v3/api-docs/**")
                 .requestMatchers("/auth/signup", "/auth/login", "/auth/mail-auth", "/auth/mail-auth-answer")
                 .requestMatchers("/member/find-id", "/member/get-temp-pw")
+                .requestMatchers("/executive-info/prev", "/executive-info/current")
                 .requestMatchers("/attendance/statistics")
                 .requestMatchers("/life4cut")
                 .requestMatchers("/post/recent-posts")
