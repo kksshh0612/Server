@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
@@ -41,7 +42,10 @@ public class Life4CutService {
     @Transactional
     public ApiResult<?> saveFile(MultipartFile file){
 
-        Life4Cut life4Cut = new Life4Cut(file, filePath);
+        String path = createSavePath();
+        String fileName = UUID.randomUUID().toString();
+
+        Life4Cut life4Cut = new Life4Cut(path, fileName);
 
         life4CutRepository.save(life4Cut);
 
@@ -50,8 +54,29 @@ public class Life4CutService {
         return ApiResult.success("인생네컷 저장 성공");
     }
 
+
     /*
-    인생네컷 조회 (최신순)
+    파일 저장 경로 생성
+     */
+    public String createSavePath(){
+
+        String path = "LIFE4CUT";
+
+        File folder = new File(filePath + path);               //해당 경로에 폴더 생성
+
+        if(!folder.exists()){       //해당 폴더가 존재하지 않을 경우 생성
+            try {
+                folder.mkdir();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+
+        return path;
+    }
+
+    /*
+    인생네컷 조회 (최신 + 랜덤)
      */
     public ApiResult<?> findFileByPaging(int size){
 

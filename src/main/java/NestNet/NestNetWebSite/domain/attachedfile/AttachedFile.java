@@ -4,6 +4,7 @@ import NestNet.NestNetWebSite.domain.post.Post;
 import NestNet.NestNetWebSite.exception.CustomException;
 import NestNet.NestNetWebSite.exception.ErrorCode;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,10 +37,12 @@ public class AttachedFile {
     /*
     생성자
      */
-    public AttachedFile(Post post, MultipartFile file, String baseFilePath){
+    @Builder
+    public AttachedFile(Post post, String originalFileName, String saveFileName, String saveFilePath) {
         this.post = post;
-        createFileName(file);
-        createSavePath(baseFilePath);
+        this.originalFileName = originalFileName;
+        this.saveFileName = saveFileName;
+        this.saveFilePath = saveFilePath;
     }
 
     //== setter ==//
@@ -48,37 +51,6 @@ public class AttachedFile {
     }
 
     //== 비지니스 로직 ==//
-    /*
-    파일 이름 중복 방지를 위한 파일명 생성
-     */
-    public void createFileName(MultipartFile file){
 
-        String fileName = Normalizer.normalize(file.getOriginalFilename(), Normalizer.Form.NFC);    //Mac, Window 한글 처리 다른 이슈 처리
-
-        this.originalFileName = fileName;
-        this.saveFileName = UUID.randomUUID().toString();
-    }
-
-    /*
-    파일 저장 경로 생성
-     */
-    public void createSavePath(String baseFilePath){
-
-        StringBuilder folderBuilder = new StringBuilder();
-        folderBuilder.append(this.post.getPostCategory().toString())
-                .append(File.separator).append(this.post.getCreatedTime().getYear());
-
-        File folder = new File(baseFilePath + folderBuilder.toString());
-
-        if(!folder.exists()){
-            try {
-                folder.mkdirs();
-            }catch (Exception e){
-                throw new CustomException(ErrorCode.CANNOT_SAVE_FILE);
-            }
-        }
-
-        this.saveFilePath = folderBuilder.toString();
-    }
 
 }

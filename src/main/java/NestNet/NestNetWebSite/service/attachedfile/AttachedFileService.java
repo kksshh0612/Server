@@ -24,8 +24,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -44,12 +47,9 @@ public class AttachedFileService {
     @Transactional
     public List<AttachedFile> save(Post post, List<MultipartFile> files){
 
-        List<AttachedFile> attachedFileList = new ArrayList<>();
-
-        for(MultipartFile file : files){
-            AttachedFile attachedFile = new AttachedFile(post, file, baseFilePath);
-            attachedFileList.add(attachedFile);
-        }
+        List<AttachedFile> attachedFileList = files.stream()
+                .map(file -> new AttachedFile(post, getOriginalFileName(file), UUID.randomUUID().toString(), createSavePath(post)))
+                .collect(Collectors.toList());
 
         attachedFileRepository.saveAll(attachedFileList);
 
@@ -59,20 +59,50 @@ public class AttachedFileService {
     }
 
     /*
-    게시물에 해당된 첨부파일 중 썸네일만 조회
+    MultipartFile에서 파일 이름 추출
      */
-    public AttachedFile findThumbNailFileByPost(Post post){
+    private String getOriginalFileName(MultipartFile file){
 
-        PageRequest pageRequest = PageRequest.of(0, 1, Sort.by(Sort.Direction.ASC, "id"));
-
-        Page<AttachedFile> filePage = attachedFileRepository.findThumbNailByPost(post, pageRequest);
-
-        List<AttachedFile> attachedFileList = filePage.getContent();
-
-        if(attachedFileList.isEmpty()) throw new CustomException(ErrorCode.THUMBNAIL_FILE_NOT_FOUND);
-
-        return attachedFileList.get(0);
+        return Normalizer.normalize(file.getOriginalFilename(), Normalizer.Form.NFC);    //Mac, Window 한글 처리 다른 이슈 처리
     }
+
+    /*
+    파일 저장 경로 생성
+     */
+    private String createSavePath(Post post){
+
+        StringBuilder folderBuilder = new StringBuilder()
+                .append(post.getPostCategory().toString())
+                .append(File.separator).append(post.getCreatedTime().getYear());
+
+        File folder = new File(baseFilePath + folderBuilder.toString());
+
+        if(!folder.exists()){       // 폴더 그냥 만들고 테스트 끝나면 삭제하는 로직 넣기..
+            try {
+                folder.mkdirs();
+            }catch (Exception e){
+                throw new CustomException(ErrorCode.CANNOT_SAVE_FILE);
+            }
+        }
+
+        return folderBuilder.toString();
+    }
+
+//    /*
+//    게시물에 해당된 첨부파일 중 썸네일만 조회
+//     */
+//    public AttachedFile findThumbNailFileByPost(Post post){
+//
+//        PageRequest pageRequest = PageRequest.of(0, 1, Sort.by(Sort.Direction.ASC, "id"));
+//
+//        Page<AttachedFile> filePage = attachedFileRepository.findThumbNailByPost(post, pageRequest);
+//
+//        List<AttachedFile> attachedFileList = filePage.getContent();
+//
+//        if(attachedFileList.isEmpty()) throw new CustomException(ErrorCode.THUMBNAIL_FILE_NOT_FOUND);
+//
+//        return attachedFileList.get(0);
+//    }
 
     /*
     실제 파일 전송
@@ -128,12 +158,11 @@ public class AttachedFileService {
         // Delete Real File
         deleteRealFile(deleteFileList);
 
-        List<AttachedFile> newFileList = new ArrayList<>();     // 새로 입력된 파일
-        if(fileList != null){
-            for(MultipartFile file : fileList){
-                newFileList.add(new AttachedFile(post, file, baseFilePath));
-            }
-        }
+        if(fileList == null) return;
+
+        List<AttachedFile> newFileList = fileList.stream()
+                .map(file -> new AttachedFile(post, getOriginalFileName(file), UUID.randomUUID().toString(), createSavePath(post)))
+                .collect(Collectors.toList());
 
         // Save To DB
         attachedFileRepository.saveAll(newFileList);
@@ -175,6 +204,8 @@ public class AttachedFileService {
             Path saveFilePath = Paths.get(filePathBuilder.toString());
 
             try {
+                System.out.println("파일경로 : " + saveFilePath.toString());
+
                 file.transferTo(saveFilePath);
             } catch (IOException | IllegalStateException e){
                 throw new CustomException(ErrorCode.CANNOT_SAVE_FILE);

@@ -1,6 +1,7 @@
 package NestNet.NestNetWebSite.domain.life4cut;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,38 +30,12 @@ public class Life4Cut {
     /*
     생성자
      */
-    public Life4Cut(MultipartFile file, String filePath){
-        createFileName(file);
-        createSavePath(filePath);
+    @Builder
+    public Life4Cut(String saveFilePath, String saveFileName) {
+        this.saveFilePath = saveFilePath;
+        this.saveFileName = saveFileName;
     }
 
     //== 비지니스 로직 ==//
-    /*
-    파일 이름 중복 방지를 위한 파일명 생성
-     */
-    public void createFileName(MultipartFile file){
-
-        this.saveFileName = UUID.randomUUID().toString();
-    }
-
-    /*
-    파일 저장 경로 생성
-     */
-    public void createSavePath(String filePath){
-
-        String path = "LIFE4CUT";
-
-        File folder = new File(filePath + path);               //해당 경로에 폴더 생성
-
-        if(!folder.exists()){       //해당 폴더가 존재하지 않을 경우 생성
-            try {
-                folder.mkdir();
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-
-        this.saveFilePath = path;
-    }
 
 }
