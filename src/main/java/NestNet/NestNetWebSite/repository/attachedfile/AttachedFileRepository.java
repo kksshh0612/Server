@@ -19,15 +19,4 @@ public interface AttachedFileRepository extends JpaRepository<AttachedFile, Long
     // 게시물에 해당하는 파일 조회
     List<AttachedFile> findAllByPost(@Param("post") Post post);
 
-    // 게시물에 해당하는 파일 중 썸네일 조회 (사진 게시판)
-    @Query("select a from AttachedFile a where a.post =:post")
-    Page<AttachedFile> findThumbNailByPost(@Param("post") Post post, Pageable pageable);
-
-    // 게시물 + 파일명으로 파일 단건 조회
-    @Query("select a from AttachedFile a where a.post =:post and a.saveFileName =:saveFileName")
-    Optional<AttachedFile> findByPostAndFileName(@Param("post") Post post, @Param("saveFileName") String saveFileName);
-
-    // 파일 삭제
-    void delete(AttachedFile file);
-
 }
