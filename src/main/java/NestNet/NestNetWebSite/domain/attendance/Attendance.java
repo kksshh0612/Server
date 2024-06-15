@@ -2,8 +2,10 @@ package NestNet.NestNetWebSite.domain.attendance;
 
 import NestNet.NestNetWebSite.domain.member.Member;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 
@@ -28,8 +30,9 @@ public class Attendance {
     /*
     생성자
      */
-    public Attendance(Member member) {
-        this.time = LocalDateTime.now();
+    @Builder
+    public Attendance(Member member, LocalDateTime attendanceTime) {
+        this.time = attendanceTime;
         this.member = member;
     }
 }

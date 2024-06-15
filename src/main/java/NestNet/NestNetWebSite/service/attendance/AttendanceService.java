@@ -32,13 +32,13 @@ public class AttendanceService {
     출석 -> 0시~24시까지 한번 가능
      */
     @Transactional
-    public ApiResult<?> saveAttendance(String memberLonginId){
+    public ApiResult<?> saveAttendance(String memberLonginId, LocalDateTime currTime){
 
         Member member = memberRepository.findByLoginId(memberLonginId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_LOGIN_ID_NOT_FOUND));
 
-        LocalDateTime startOfDay = LocalDateTime.now().toLocalDate().atStartOfDay();
-        LocalDateTime endOfDay = LocalDateTime.now().toLocalDate().atTime(LocalTime.MAX);
+        LocalDateTime startOfDay = currTime.toLocalDate().atStartOfDay();
+        LocalDateTime endOfDay = currTime.toLocalDate().atTime(LocalTime.MAX);
 
         Optional<Attendance> prevAttendance = attendanceRepository.findByMemberAndDay(member, startOfDay, endOfDay);
 
@@ -46,26 +46,10 @@ public class AttendanceService {
             throw new CustomException(ErrorCode.ALREADY_ATTENDED);
         }
 
-        Attendance attendance = new Attendance(member);
+        Attendance attendance = new Attendance(member, currTime);
         attendanceRepository.save(attendance);
 
         return ApiResult.success("출석하셨습니다.");
-    }
-
-    /*
-    회원 출석 여부 조회
-     */
-    public ApiResult<?> findAttendance(String memberLoginId){
-
-        Member loginMember = memberRepository.findByLoginId(memberLoginId)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_LOGIN_ID_NOT_FOUND));
-
-        boolean isMemberAttended = false;
-
-        Optional<Attendance> todayAttendance = attendanceRepository.findByMember(loginMember);
-        if(todayAttendance.isPresent()) isMemberAttended = true;
-
-        return ApiResult.success(isMemberAttended);
     }
 
     /*
@@ -79,7 +63,7 @@ public class AttendanceService {
         LocalDateTime startDateTimeOfWeek = currDate.minusDays(currDayOfWeek.getValue() - 1).atStartOfDay();       // 이번주 시작일(Mon)의 시작 시간
         LocalDateTime endDateTimeOfWeek = currDate.plusDays(6).atTime(23, 59);                        // 이번주 종료일(Sun)의 끝나는 시간
 
-        List<Object[]> weeklyStatistics = attendanceRepository.findWeeklyCount(startDateTimeOfWeek, endDateTimeOfWeek);
+        List<Object[]> weeklyStatistics = attendanceRepository.findWeeklyStatisticsByMember(startDateTimeOfWeek, endDateTimeOfWeek);
 
         Collections.sort(weeklyStatistics, new Comparator<Object[]>() {
             @Override
@@ -92,7 +76,7 @@ public class AttendanceService {
         LocalDateTime endDateTimeOfMonth = now.toLocalDate().withDayOfMonth(now.toLocalDate().lengthOfMonth())
                 .atTime(23, 59);  // 이번달 종료일의 끝나는 시간
 
-        List<Object[]> monthlyStatistics = attendanceRepository.findMonthlyCount(startDateTimeOfMonth, endDateTimeOfMonth);
+        List<Object[]> monthlyStatistics = attendanceRepository.findMonthlyStatisticsByMember(startDateTimeOfMonth, endDateTimeOfMonth);
 
         Collections.sort(monthlyStatistics, new Comparator<Object[]>() {
             @Override

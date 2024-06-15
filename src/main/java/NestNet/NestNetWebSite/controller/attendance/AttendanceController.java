@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -31,7 +33,7 @@ public class AttendanceController {
     @Operation(summary = "출석", description = "로그인한 사용자가 출석 버튼을 눌렀을 때 동작한다.")
     public ApiResult<?> memberAttendance(@AuthenticationPrincipal UserDetails userDetails){
 
-        return attendanceService.saveAttendance(userDetails.getUsername());
+        return attendanceService.saveAttendance(userDetails.getUsername(), LocalDateTime.now());
     }
 
     /*
@@ -46,17 +48,4 @@ public class AttendanceController {
         return attendanceService.findAttendanceStatistics();
     }
 
-    /*
-    로그인한 회원의 출석 정보 조회
-     */
-//    @GetMapping("/attendance/member-attended")
-//    @Operation(summary = "회원 출석 여부 조회", description = "", responses =
-//    @ApiResponse(responseCode = "200", description = "", content = @Content(schema = @Schema(implementation = Boolean.class)))
-//    )
-//    public ApiResult<?> findAttendance(@AuthenticationPrincipal UserDetails userDetails){
-//
-//        if(userDetails == null) return ApiResult.success(false);
-//
-//        return attendanceService.findAttendance(userDetails.getUsername());
-//    }
 }
