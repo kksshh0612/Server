@@ -27,12 +27,4 @@ public interface ExamCollectionPostRepository extends JpaRepository<ExamCollecti
                                              @Param("year") Integer year, @Param("semester") Integer semester, @Param("examType") ExamType examType,
                                              Pageable pageable);
 
-    // 족보 게시물 모두 조회
-    @Query("select p from ExamCollectionPost p order by p.id desc")
-    List<ExamCollectionPost> findAll();
-
-    // 족보 게시물 개수 제한에 따른 리스트 조회
-    @Query("select p from ExamCollectionPost p")
-    Page<ExamCollectionPost> findAll(Pageable pageable);
-
 }
