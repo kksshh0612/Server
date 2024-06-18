@@ -3,9 +3,12 @@ package NestNet.NestNetWebSite.domain.comment;
 import NestNet.NestNetWebSite.domain.member.Member;
 import NestNet.NestNetWebSite.domain.post.Post;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.cglib.core.Local;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -38,11 +41,13 @@ public class Comment {
     /*
     생성자
      */
-    public Comment(Post post, Member member, String content){
+    @Builder
+    public Comment(Post post, Member member, String content, LocalDateTime createdTime, LocalDateTime modifiedTime){
         this.post = post;
         this.member = member;
         this.content = content;
-        this.createdTime = LocalDateTime.now();
+        this.createdTime = createdTime;
+        this.modifiedTime = modifiedTime;
     }
 
     //== setter ==//

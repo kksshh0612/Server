@@ -9,6 +9,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "댓글 API")
@@ -24,7 +26,7 @@ public class CommentController {
     public void writeComment(@PathVariable("post_id") Long postId, @RequestBody CommentRequest commentRequest,
                                   @AuthenticationPrincipal UserDetails userDetails){
 
-        commentService.saveComment(commentRequest, postId, userDetails.getUsername());
+        commentService.saveComment(commentRequest, postId, userDetails.getUsername(), LocalDateTime.now());
     }
 
     /*

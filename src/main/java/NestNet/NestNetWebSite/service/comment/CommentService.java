@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -26,7 +28,7 @@ public class CommentService {
     댓글 저장
      */
     @Transactional
-    public void saveComment(CommentRequest commentRequest, Long postId, String memberLoginId){
+    public void saveComment(CommentRequest commentRequest, Long postId, String memberLoginId, LocalDateTime currTime){
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
@@ -34,7 +36,7 @@ public class CommentService {
         Member member = memberRepository.findByLoginId(memberLoginId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_LOGIN_ID_NOT_FOUND));
 
-        Comment comment = commentRequest.toEntity(post, member);
+        Comment comment = commentRequest.toEntity(post, member, currTime);
 
         // 양방향 연관관계 주입
         post.addComment(comment);
@@ -55,42 +57,6 @@ public class CommentService {
     }
 
     /*
-    게시물에 따른 댓글 모두 조회
-     */
-//    public List<CommentResponse> findCommentByPost(Post post, String memberLoginId){
-//
-//        List<Comment> commentList = commentRepository.findAllByPost(post);
-//
-//        List<CommentResponse> resultList = new ArrayList<>();
-//        for(Comment comment : commentList){
-//            if((comment.getMember().getLoginId()).equals(memberLoginId)){       //현재 로그인한 멤버가 작성한 댓글이면
-//                resultList.add(
-//                        CommentResponse.builder()
-//                                .id(comment.getId())
-//                                .username(comment.getMember().getName())
-//                                .content(comment.getContent())
-//                                .createdTime(comment.getCreatedTime())
-//                                .modifiedTime(comment.getModifiedTime())
-//                                .isMemberWritten(true)
-//                                .build());
-//            }
-//            else{
-//                resultList.add(
-//                        CommentResponse.builder()
-//                                .id(comment.getId())
-//                                .username(comment.getMember().getName())
-//                                .content(comment.getContent())
-//                                .createdTime(comment.getCreatedTime())
-//                                .modifiedTime(comment.getModifiedTime())
-//                                .isMemberWritten(false)
-//                                .build());
-//            }
-//        }
-//
-//        return resultList;
-//    }
-
-    /*
     댓글 단건 삭제
      */
     @Transactional
@@ -100,14 +66,5 @@ public class CommentService {
                         .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
 
         commentRepository.delete(comment);
-    }
-
-    /*
-    게시물에 관련된 댓글 모두 삭제
-     */
-    @Transactional
-    public void deleteAllComments(Post post){
-
-        commentRepository.deleteAllByPost(post);
     }
 }
