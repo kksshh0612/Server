@@ -1,6 +1,7 @@
 package NestNet.NestNetWebSite.domain.executive;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,6 +30,7 @@ public class ExecutiveInfo {
     /*
     생성자
      */
+    @Builder
     public ExecutiveInfo(int year, String name, String studentId, String role, int priority){
         this.year = year;
         this.name = name;
