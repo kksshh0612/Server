@@ -19,7 +19,6 @@ import NestNet.NestNetWebSite.exception.ErrorCode;
 import NestNet.NestNetWebSite.repository.post.UnifiedPostRepository;
 import NestNet.NestNetWebSite.repository.member.MemberRepository;
 import NestNet.NestNetWebSite.service.attachedfile.AttachedFileService;
-import NestNet.NestNetWebSite.service.comment.CommentService;
 import NestNet.NestNetWebSite.service.like.PostLikeService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
@@ -41,7 +40,6 @@ public class UnifiedPostService {
     private final UnifiedPostRepository unifiedPostRepository;
     private final MemberRepository memberRepository;
     private final AttachedFileService attachedFileService;
-    private final CommentService commentService;
     private final PostLikeService postLikeService;
     private final PostService postService;
 

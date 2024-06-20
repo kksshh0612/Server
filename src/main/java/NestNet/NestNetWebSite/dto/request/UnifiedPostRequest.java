@@ -26,7 +26,7 @@ public class UnifiedPostRequest {
                 .bodyContent(this.bodyContent)
                 .member(member)
                 .viewCount(0L)
-                .likeCount(0)
+                .recommendationCount(0)
                 .createdTime(LocalDateTime.now())
                 .unifiedPostType(this.unifiedPostType)
                 .build();

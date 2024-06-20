@@ -29,10 +29,10 @@ public class UnifiedPost extends Post {
     생성자
      */
     @Builder
-    public UnifiedPost(String title, String bodyContent, Member member, Long viewCount, int likeCount,
+    public UnifiedPost(String title, String bodyContent, Member member, Long viewCount, int recommendationCount,
                        LocalDateTime createdTime, UnifiedPostType unifiedPostType){
 
-        super(title, bodyContent, member, viewCount, likeCount, PostCategory.UNIFIED, createdTime);
+        super(title, bodyContent, member, viewCount, recommendationCount, PostCategory.UNIFIED, createdTime);
         this.unifiedPostType = unifiedPostType;
     }
 

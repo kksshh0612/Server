@@ -17,8 +17,7 @@ public interface UnifiedPostRepository extends JpaRepository<UnifiedPost, Long> 
 
     // 통합 게시판 (자유 / 개발 / 진로) 목록 조회
     @Query("select u from UnifiedPost u where " +
-            "(:unifiedPostType is null or u.unifiedPostType =: unifiedPostType) " +
-            "order by u.id desc")
+            "(:unifiedPostType is null or u.unifiedPostType =: unifiedPostType)")
     Page<UnifiedPost> findByUnifiedPostTypeByPaging(@Param("unifiedPostType") UnifiedPostType unifiedPostType, Pageable pageable);
 
 }
