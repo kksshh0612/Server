@@ -21,7 +21,8 @@ import java.util.List;
 @NoArgsConstructor
 public abstract class Post {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_id")
     private Long id;                                                // PK
 
@@ -67,11 +68,12 @@ public abstract class Post {
     }
 
     //== 연관관계 편의 매서드 ==//
-    public void addAttachedFile(AttachedFile attachedFile){
+    public void addAttachedFile(AttachedFile attachedFile) {
         attachedFileList.add(attachedFile);
         attachedFile.injectPost(this);
     }
-    public void addComment(Comment comment){
+
+    public void addComment(Comment comment) {
         commentList.add(comment);
         comment.injectPost(this);
     }
@@ -81,17 +83,18 @@ public abstract class Post {
     /*
     조회수 count
      */
-    public void addViewCount(){
+    public void addViewCount() {
         this.viewCount++;
     }
 
     /*
     좋아요 / 좋아요 취소
     */
-    public void like(){
+    public void like() {
         this.likeCount++;
     }
-    public void cancelLike(){
+
+    public void cancelLike() {
         this.likeCount--;
     }
 
@@ -99,9 +102,11 @@ public abstract class Post {
     public void setTitle(String title) {
         this.title = title;
     }
+
     public void setBodyContent(String bodyContent) {
         this.bodyContent = bodyContent;
     }
+
     public void setModifiedTime(LocalDateTime modifiedTime) {
         this.modifiedTime = modifiedTime;
     }

@@ -3,6 +3,7 @@ package NestNet.NestNetWebSite.domain.like;
 import NestNet.NestNetWebSite.domain.member.Member;
 import NestNet.NestNetWebSite.domain.post.Post;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,6 +30,7 @@ public class PostLike {
     /*
     생성자
      */
+    @Builder
     public PostLike(Post post, Member member) {
         this.post = post;
         this.member = member;

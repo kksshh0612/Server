@@ -4,15 +4,12 @@ import NestNet.NestNetWebSite.api.ApiResult;
 import NestNet.NestNetWebSite.config.redis.RedisUtil;
 import NestNet.NestNetWebSite.domain.member.Member;
 import NestNet.NestNetWebSite.domain.post.Post;
-import NestNet.NestNetWebSite.domain.post.PostCategory;
 import NestNet.NestNetWebSite.dto.response.RecentPostListDto;
 import NestNet.NestNetWebSite.dto.response.RecentPostListResponse;
 import NestNet.NestNetWebSite.exception.CustomException;
 import NestNet.NestNetWebSite.exception.ErrorCode;
 import NestNet.NestNetWebSite.repository.member.MemberRepository;
 import NestNet.NestNetWebSite.repository.post.PostRepository;
-import NestNet.NestNetWebSite.service.attachedfile.AttachedFileService;
-import NestNet.NestNetWebSite.service.comment.CommentService;
 import NestNet.NestNetWebSite.service.like.PostLikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -70,7 +67,7 @@ public class PostService {
     }
 
     /*
-    게시물 삭제
+    게시물 삭제 -> soft delete
      */
     @Transactional
     public void deletePost(Long postId){
@@ -78,8 +75,6 @@ public class PostService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
 
-
-        postLikeService.deleteLike(post);
 
         postRepository.delete(post);
     }

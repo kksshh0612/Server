@@ -24,7 +24,6 @@ public class PostLikeService {
 
     private final PostLikeRepository postLikeRepository;
     private final MemberRepository memberRepository;
-    private final PostRepository postRepository;
 
     /*
     좋아요 저장
@@ -66,14 +65,5 @@ public class PostLikeService {
         if(like.isPresent()) return true;
 
         return false;
-    }
-
-    /*
-    게시물 관련 좋아요 삭제
-     */
-    @Transactional
-    public void deleteLike(Post post){
-
-        postLikeRepository.deleteAllByPost(post);
     }
 }
