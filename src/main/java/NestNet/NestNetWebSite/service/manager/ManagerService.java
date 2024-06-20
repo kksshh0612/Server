@@ -87,19 +87,19 @@ public class ManagerService {
         return ApiResult.success(member.getLoginId() + " 님의 회원가입 요청 거절이 완료되었습니다.");
     }
 
-    /*
-    재학생 -> 졸업생으로 전환
-    */
-    @Transactional
-    public ApiResult<?> changeAuthorityGraduate(Long id){
-
-        Member member = memberRepository.findById(id)
-                        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
-        member.changeMemberToGraduate();
-
-        return ApiResult.success(member.getName() + "님의 권한이 졸업생으로 변경되었습니다.");
-    }
+//    /*
+//    재학생 -> 졸업생으로 전환
+//    */
+//    @Transactional
+//    public ApiResult<?> changeAuthorityGraduate(Long id){
+//
+//        Member member = memberRepository.findById(id)
+//                        .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+//
+//        member.changeMemberToGraduate();
+//
+//        return ApiResult.success(member.getName() + "님의 권한이 졸업생으로 변경되었습니다.");
+//    }
 
     /*
     권한 변경
@@ -120,8 +120,10 @@ public class ManagerService {
      */
     public ApiResult<?> findAllMemberInfo(){
 
-        // 승인 대기 제외
-        List<Member> memberList = memberRepository.findAllByNameAndMemberAuthority(MemberAuthority.WAITING_FOR_APPROVAL);
+        // 승인 대기와 ADMIN, 탈퇴 회원을 제외한 모든 회원 조회
+        List<Member> memberList = memberRepository.findAllApprovedMemberExceptAdmin(
+                List.of(MemberAuthority.ADMIN, MemberAuthority.WAITING_FOR_APPROVAL, MemberAuthority.WITHDRAWN_MEMBER)
+        );
 
         List<MemberInfoDto> memberInfoDtoList = new ArrayList<>();
         for(Member member : memberList){

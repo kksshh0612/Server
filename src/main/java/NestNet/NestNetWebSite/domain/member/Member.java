@@ -16,8 +16,6 @@ import java.util.UUID;
 @Entity
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Member {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,6 +42,24 @@ public class Member {
     private MemberAuthority memberAuthority;        // 권한 (PRESIDENT, VICE_PRESIDENT, MANAGER, GENERAL_MEMBER, GRADUATED_MEMBER, WAITING_FOR_APPROVAL, WITHDRAWN_MEMBER)
 
     private LocalDateTime joinDate;                 // 회원가입 날짜
+
+    /*
+    생성자
+     */
+    @Builder
+    public Member(String loginId, String loginPassword, String name, boolean graduated, int graduateYear,
+                  String studentId, int grade, String emailAddress, MemberAuthority memberAuthority, LocalDateTime joinDate) {
+        this.loginId = loginId;
+        this.loginPassword = loginPassword;
+        this.name = name;
+        this.graduated = graduated;
+        this.graduateYear = graduateYear;
+        this.studentId = studentId;
+        this.grade = grade;
+        this.emailAddress = emailAddress;
+        this.memberAuthority = memberAuthority;
+        this.joinDate = joinDate;
+    }
 
     //== 비지니스 로직 ==//
     /*

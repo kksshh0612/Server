@@ -3,6 +3,7 @@ package NestNet.NestNetWebSite.domain.manager;
 import NestNet.NestNetWebSite.domain.member.Member;
 import NestNet.NestNetWebSite.domain.member.MemberAuthority;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,6 +29,7 @@ public class MemberSignUpManagement {
     /*
     생성자
      */
+    @Builder
     public MemberSignUpManagement(Member member, MemberAuthority requestMemberAuthority) {
         this.member = member;
         this.requestMemberAuthority = requestMemberAuthority;
