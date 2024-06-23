@@ -10,7 +10,6 @@ import NestNet.NestNetWebSite.dto.request.PhotoPostModifyRequest;
 import NestNet.NestNetWebSite.dto.request.PhotoPostRequest;
 import NestNet.NestNetWebSite.dto.response.AttachedFileDto;
 import NestNet.NestNetWebSite.dto.response.CommentDto;
-import NestNet.NestNetWebSite.dto.response.examcollectionpost.ExamCollectionPostDto;
 import NestNet.NestNetWebSite.dto.response.photopost.PhotoPostDto;
 import NestNet.NestNetWebSite.dto.response.photopost.PhotoPostResponse;
 import NestNet.NestNetWebSite.dto.response.photopost.ThumbNailDto;
