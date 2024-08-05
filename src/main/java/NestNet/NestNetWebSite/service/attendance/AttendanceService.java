@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -32,7 +33,7 @@ public class AttendanceService {
     출석 -> 0시~24시까지 한번 가능
      */
     @Transactional
-    public ApiResult<?> saveAttendance(String memberLonginId, LocalDateTime currTime){
+    public void saveAttendance(String memberLonginId, LocalDateTime currTime){
 
         Member member = memberRepository.findByLoginId(memberLonginId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_LOGIN_ID_NOT_FOUND));
@@ -48,63 +49,58 @@ public class AttendanceService {
 
         Attendance attendance = new Attendance(member, currTime);
         attendanceRepository.save(attendance);
-
-        return ApiResult.success("출석하셨습니다.");
     }
 
     /*
-    주간 / 월간 출석 조회
+    주간 출석 조회
      */
-    public ApiResult<?> findAttendanceStatistics(){
+    public List<WeeklyAttendanceStatisticsDto> findWeeklyAttendanceStatistics(LocalDateTime currTime){
 
-        LocalDateTime now = LocalDateTime.now();
-        DayOfWeek currDayOfWeek = now.getDayOfWeek();     // 현재 요일 (1:월 7:일)
-        LocalDate currDate = now.toLocalDate();
+        DayOfWeek currDayOfWeek = currTime.getDayOfWeek();     // 현재 요일 (1:월 7:일)
+        LocalDate currDate = currTime.toLocalDate();
         LocalDateTime startDateTimeOfWeek = currDate.minusDays(currDayOfWeek.getValue() - 1).atStartOfDay();       // 이번주 시작일(Mon)의 시작 시간
-        LocalDateTime endDateTimeOfWeek = currDate.plusDays(6).atTime(23, 59);                        // 이번주 종료일(Sun)의 끝나는 시간
+        LocalDateTime endDateTimeOfWeek = currDate.plusDays(6).atTime(23, 59, 59);                        // 이번주 종료일(Sun)의 끝나는 시간
 
         List<Object[]> weeklyStatistics = attendanceRepository.findWeeklyStatisticsByMember(startDateTimeOfWeek, endDateTimeOfWeek);
 
-        Collections.sort(weeklyStatistics, new Comparator<Object[]>() {
-            @Override
-            public int compare(Object[] o1, Object[] o2) {
-                return Integer.valueOf(String.valueOf(o2[1])) - Integer.valueOf(String.valueOf(o1[1]));
-            }
-        });
+        List<Object[]> top5RankWeeklyStatistics = weeklyStatistics.stream()
+                .sorted((o1, o2) -> Long.compare(
+                        Long.parseLong(String.valueOf(o2[1])),
+                        Long.parseLong(String.valueOf(o1[1]))
+                ))
+                .limit(5)
+                .collect(Collectors.toList());
 
-        LocalDateTime startDateTimeOfMonth = now.toLocalDate().withDayOfMonth(1).atStartOfDay();       // 이번달 시작일의 시작 시간
-        LocalDateTime endDateTimeOfMonth = now.toLocalDate().withDayOfMonth(now.toLocalDate().lengthOfMonth())
-                .atTime(23, 59);  // 이번달 종료일의 끝나는 시간
+        List<WeeklyAttendanceStatisticsDto> weeklyStatisticsDtoList = top5RankWeeklyStatistics.stream()
+                .map(WeeklyAttendanceStatisticsDto::of)
+                .toList();
+
+        return  weeklyStatisticsDtoList;
+    }
+
+    /*
+    월간 출석 조회
+     */
+    public List<MonthlyAttendanceStatisticsDto> findMonthlyAttendanceStatistics(LocalDateTime currTime){
+
+        LocalDateTime startDateTimeOfMonth = currTime.toLocalDate().withDayOfMonth(1).atStartOfDay();       // 이번달 시작일의 시작 시간
+        LocalDateTime endDateTimeOfMonth = currTime.toLocalDate().withDayOfMonth(currTime.toLocalDate().lengthOfMonth())
+                .atTime(23, 59, 59);  // 이번달 종료일의 끝나는 시간
 
         List<Object[]> monthlyStatistics = attendanceRepository.findMonthlyStatisticsByMember(startDateTimeOfMonth, endDateTimeOfMonth);
 
-        Collections.sort(monthlyStatistics, new Comparator<Object[]>() {
-            @Override
-            public int compare(Object[] o1, Object[] o2) {
-                return Integer.valueOf(String.valueOf(o2[1])) - Integer.valueOf(String.valueOf(o1[1]));
-            }
-        });
+        List<Object[]> top5RankMonthlyStatistics = monthlyStatistics.stream()
+                .sorted((o1, o2) -> Long.compare(
+                        Long.parseLong(String.valueOf(o2[1])),
+                        Long.parseLong(String.valueOf(o1[1]))
+                ))
+                .limit(5)
+                .collect(Collectors.toList());
 
-        List<WeeklyAttendanceStatisticsDto> weeklyStatisticsDtoList = new ArrayList<>();
+        List<MonthlyAttendanceStatisticsDto> monthlyStatisticsDtoList = top5RankMonthlyStatistics.stream()
+                .map(MonthlyAttendanceStatisticsDto::of)
+                .toList();
 
-        int cnt = 0;
-        for(Object[] row : weeklyStatistics){
-            if(cnt++ >= 5) break;
-            Member member = (Member)row[0];
-            weeklyStatisticsDtoList.add(new WeeklyAttendanceStatisticsDto(member.getName(), "weekly", Long.valueOf(String.valueOf(row[1])) * 10));
-        }
-
-        List<MonthlyAttendanceStatisticsDto> monthlyStatisticsDtoList = new ArrayList<>();
-
-        cnt = 0;
-        for(Object[] row : monthlyStatistics){
-            if(cnt++ >= 5) break;
-            Member member = (Member)row[0];
-            monthlyStatisticsDtoList.add(new MonthlyAttendanceStatisticsDto(member.getName(), "monthly", Long.valueOf(String.valueOf(row[1])) * 10));
-        }
-
-        return ApiResult.success(new AttendanceStatisticsResponse(weeklyStatisticsDtoList, monthlyStatisticsDtoList));
-
+        return monthlyStatisticsDtoList;
     }
-
 }

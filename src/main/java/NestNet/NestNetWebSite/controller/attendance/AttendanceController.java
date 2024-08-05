@@ -2,6 +2,8 @@ package NestNet.NestNetWebSite.controller.attendance;
 
 import NestNet.NestNetWebSite.api.ApiResult;
 import NestNet.NestNetWebSite.dto.response.attendance.AttendanceStatisticsResponse;
+import NestNet.NestNetWebSite.dto.response.attendance.MonthlyAttendanceStatisticsDto;
+import NestNet.NestNetWebSite.dto.response.attendance.WeeklyAttendanceStatisticsDto;
 import NestNet.NestNetWebSite.service.attendance.AttendanceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,7 +36,9 @@ public class AttendanceController {
     @Operation(summary = "출석", description = "로그인한 사용자가 출석 버튼을 눌렀을 때 동작한다.")
     public ApiResult<?> memberAttendance(@AuthenticationPrincipal UserDetails userDetails){
 
-        return attendanceService.saveAttendance(userDetails.getUsername(), LocalDateTime.now());
+        attendanceService.saveAttendance(userDetails.getUsername(), LocalDateTime.now());
+
+        return ApiResult.success("출석하였습니다.");
     }
 
     /*
@@ -45,7 +50,12 @@ public class AttendanceController {
     )
     public ApiResult<?> findAttendanceStatistics(){
 
-        return attendanceService.findAttendanceStatistics();
+        LocalDateTime currTime = LocalDateTime.now();
+
+        List<WeeklyAttendanceStatisticsDto> weeklyAttendanceStatistics = attendanceService.findWeeklyAttendanceStatistics(currTime);
+        List<MonthlyAttendanceStatisticsDto> monthlyAttendanceStatistics = attendanceService.findMonthlyAttendanceStatistics(currTime);
+
+        return ApiResult.success(new AttendanceStatisticsResponse(weeklyAttendanceStatistics, monthlyAttendanceStatistics));
     }
 
 }
