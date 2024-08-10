@@ -1,9 +1,27 @@
 package NestNet.NestNetWebSite.domain.member;
 
+import lombok.Getter;
+
 /**
- * 회원 권한 ENUM    ADMIN, 회장, 부회장, 서버관리자, 재학생, 휴학생, 졸업생, 승인대기중, 탈퇴한 멤버
+ * 회원 권한 ENUM
  */
+@Getter
 public enum MemberAuthority {
-    ADMIN, PRESIDENT, VICE_PRESIDENT, MANAGER, GENERAL_MEMBER, ON_LEAVE_MEMBER, GRADUATED_MEMBER, WAITING_FOR_APPROVAL, WITHDRAWN_MEMBER
+
+    ADMIN("최고관리자"),
+    PRESIDENT("회장"),
+    VICE_PRESIDENT("부회장"),
+    MANAGER("서버관리자"),
+    GENERAL_MEMBER("재학생"),
+    ON_LEAVE_MEMBER("휴학생"),
+    GRADUATED_MEMBER("졸업생"),
+    WAITING_FOR_APPROVAL("승인대기"),
+    WITHDRAWN_MEMBER("탈퇴");
+
+    private String name;
+
+    MemberAuthority(String name) {
+        this.name = name;
+    }
 }
 
